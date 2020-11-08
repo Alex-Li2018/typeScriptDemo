@@ -18,7 +18,12 @@
  /**
   * 类型推断: 能够推断出数据类型的
   * 类型注解: 
+  * 联合类型: string | number
   */
+
+  let tmp : string | number
+  tmp = 123;
+  tmp = 'aaa'
 
   function hello():void {
     let str : string = 'hello world';
