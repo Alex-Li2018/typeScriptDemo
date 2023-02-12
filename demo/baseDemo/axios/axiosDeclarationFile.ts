@@ -16,6 +16,7 @@ export type AxiosResponseHeaders = Record<string, string> & {
   "set-cookie"?: string[]
 };
 
+// function的调用签名
 export interface AxiosRequestTransformer {
   (data: any, headers: AxiosRequestHeaders): any;
 }
@@ -85,6 +86,7 @@ export interface TransitionalOptions {
 
 export interface GenericAbortSignal {
   aborted: boolean;
+  // reset  parameters参数个数不固定
   onabort: ((...args: any) => any) | null;
   addEventListener: (...args: any) => any;
   removeEventListener: (...args: any) => any;
@@ -92,6 +94,7 @@ export interface GenericAbortSignal {
 
 export interface FormDataVisitorHelpers {
   defaultVisitor: SerializerVisitor;
+  // 属性值是一个function 参数value 返回any
   convertValue: (value: any) => any;
   isVisitable: (value: any) => boolean;
 }
@@ -101,6 +104,7 @@ export interface SerializerVisitor {
       this: GenericFormData,
       value: any,
       key: string | number,
+      // null 或者 字符串数据 或 数字数组
       path: null | Array<string | number>,
       helpers: FormDataVisitorHelpers
   ): boolean;
@@ -118,6 +122,7 @@ export interface FormSerializerOptions extends SerializerOptions {
 }
 
 export interface ParamEncoder {
+  // function value的类型值是 any defaultEncoder是一个function 
   (value: any, defaultEncoder: (value: any) => any): any;
 }
 
@@ -125,6 +130,7 @@ export interface ParamsSerializerOptions extends SerializerOptions {
   encode?: ParamEncoder;
 }
 
+// D是范型 默认是any
 export interface AxiosRequestConfig<D = any> {
   url?: string;
   method?: Method | string;
@@ -161,6 +167,7 @@ export interface AxiosRequestConfig<D = any> {
   signal?: GenericAbortSignal;
   insecureHTTPParser?: boolean;
   env?: {
+    // TODO ?????
     FormData?: new (...args: any[]) => object;
   };
   formSerializer?: FormSerializerOptions;
@@ -180,6 +187,7 @@ export interface HeadersDefaults {
   unlink?: AxiosRequestHeaders;
 }
 
+// Omit 从type中挑移除对应的属性（Keys是属性字符串组成的字符串字面量集合）并组成新的类型
 export interface AxiosDefaults<D = any> extends Omit<AxiosRequestConfig<D>, 'headers'> {
   headers: HeadersDefaults;
 }
@@ -197,6 +205,7 @@ export interface AxiosResponse<T = any, D = any>  {
   request?: any;
 }
 
+// TODO: class type 两个范型
 export class AxiosError<T = unknown, D = any> extends Error {
   constructor(
     message?: string,
