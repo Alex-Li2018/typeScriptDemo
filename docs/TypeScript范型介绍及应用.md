@@ -177,9 +177,13 @@ GenericNumber.printFlag = function () {
 
 ![范型变量](./imgs/%E8%8C%83%E5%9E%8B%E5%8F%98%E9%87%8F.png)
 
-### 泛型工具介绍
+### 泛型类型工具介绍
 
 typescript提供了一些有用的类型工具来帮助开发者实现类型转换，同时这些类型是全局可用的。
+
+#### infer关键字
+
+在介绍typescript的范型类型工具之前我们需要先介绍infer关键字。
 
 #### Partial<type>
 将type中的所有属性都变为可选的
@@ -416,6 +420,7 @@ type T0 = NonNullable<string | number | undefined>;
 ##  参考
 
 - [typescript handbook](https://www.typescriptlang.org/docs/handbook/typescript-from-scratch.html)
+- **[learn typescript](https://learntypescript.dev/)**
 - [接近天花板的TS类型体操，看懂你就能玩转TS了
 ](https://juejin.cn/post/7061556434692997156)
 - [【动画演示】TypeScript 泛型中的 K、T、V 等到底是个啥？](https://juejin.cn/post/7084410879223005215)
