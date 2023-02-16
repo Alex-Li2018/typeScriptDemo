@@ -9,7 +9,6 @@ TypeScript 是一种由微软开发的自由和开源的编程语言。它是 Ja
 
 ![typescript](./imgs/typescript.png)
 
-
 ## Generics 什么是泛型
 在软件工程中最主要的部分是不仅仅构建具有定义明确、一致性的API组件，最重要的是可重复使用。这些组件既可以处理今天的数据也可以适配明天的数据。这种可以适配不同类型的数据的开发范式将为构建大型软件系统提供最灵活的功能。
 
@@ -246,7 +245,7 @@ const obj2: Required<Props> = { a: 5 };
 
 ```js
 type Required<T> = {
-    readonly [P in keyof T]-?: T[P]
+  readonly [P in keyof T]-?: T[P]
 }
 ```
 
@@ -414,8 +413,115 @@ type T0 = NonNullable<string | number | undefined>;
 // type T0 = string | number
 ```
 
+#### infer关键字
 
-## 总结
+前面的例子讲了一些比较简单的类型定义，这段中我们介绍一种与类型推导紧密相关的infer关键字。
+
+Infer 关键字用于条件中的类型推导。将推导的类型放入变量中，这个推导的类型可以用在条件分支中。常用在一些公用类型中。
+
+```js
+type ArrayElementType<T> = T extends (infer E)[] ? E : T;
+
+// type of item1 is `number`
+type item1 = ArrayElementType<number[]>;
+
+// type of item1 is `{name: string}`
+type item2 = ArrayElementType<{ name: string }>;
+```
+
+上例中当构造item1时，条件类型中的条件为真，因为number[]匹配(infer E)[]。 因此，在此匹配过程中，E 被推断为number。 返回条件的第一个分支 E，解析为 number。item1的类型就是number。
+在构造item2时，条件类型中的条件为false，因为{name:string}不匹配(infer E)[]。因此返回条件的第二个分支T，也就是原来传入的参数{name: string}。item2的类型是对象字面量类型{ name: string }。
+
+##### typeScript中最典型的例子
+
+我们想要让typescript自动帮我们推导一个函数类型的返回值，如下例子：
+
+```js
+// T0 = string
+type T0 = FunctionReturnType<() => string>;
+```
+
+我们利用infer字段就很容易实现， 思路：
+
+- 判断是否是函数类型，如果是函数类型推导函数的返回值类型；
+- 如果不是函数类型，类型报错
+
+```js
+type FunctionReturnType<T extends (...args: any) => any> = T extends (...args: any) => infer R ? R : T;
+```
+
+上例利用extends做范型约束，如果不是函数类型会类型报错。
+
+##### 为何要设计infer
+
+设计infer必定是typescript不能满足某些场景时才设计。我想其中最重要的一个原因是，范型是一个整体，当范型是一个对象 数组或者函数的的时候，很难直接准确获取到其子类型，比如对象的属性数组的元素函数的返回值等等。例如我要推到对象 **{label: xxxx}** 中label属性值的类型，就可以如此推导  **{label：infer R}**
+
+```js
+type GetLabelTypeFromObject<T> = T extends ? { label: infer R } ? R : never
+
+type Result = GetLabelTypeFromObject<{ label: string }>;
+// type Result = string
+```
+
+#### Parameters<Type>
+
+获取函数类型中传入参数的类型,返回值是参数类型的元组。
+
+原理：
+
+```js
+type Parameters<T extends (...args: any) => any> = T extends (...args: infer P) => any ? P : never
+```
+
+示例：
+
+```js
+// type T0 = []
+type T0 = Parameters<() => string>;
+// type T1 = [s: string]
+type T1 = Parameters<(s: string) => void>;
+```
+
+#### ReturnType<Type>
+
+获取函数返回值的类型，与infer章节中的FunctionReturnType例子一样
+
+原理：
+
+```js
+type ReturnType<T extends (...args: any) => any> = T extends (...args: any) => infer R ? R : any
+```
+
+示例：
+
+```js
+// type T0 = string
+type T0 = ReturnType<() => string>;
+// type T2 = unknown
+type T2 = ReturnType<<T>() => T>;
+```
+
+#### InstanceType<Type>
+
+返回类实例话的实例的构造函数类型
+
+原理：
+
+```js
+type InstanceType<T extends abstract new (...args: any) => any> = T extends abstract new (...args: any) => infer R ? R : any
+```
+
+示例：
+
+```js
+class C {
+  x = 0;
+  y = 0;
+}
+ 
+// type T0 = C
+type T0 = InstanceType<typeof C>;
+```
 
 ##  参考
 
